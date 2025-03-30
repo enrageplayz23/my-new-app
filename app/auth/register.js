@@ -51,7 +51,7 @@ export default function RegisterScreen() {
         <Text style={styles.link}>Privacy Policy</Text>.
         </Text>
 
-        <TouchableOpacity style={styles.createBtn} onPress={() => router.push('/otp')}>
+        <TouchableOpacity style={styles.createBtn} onPress={() => router.push('/auth/otp')}>
         <Text style={styles.createBtnText}>Create new account</Text>
         </TouchableOpacity>
 
@@ -67,7 +67,7 @@ export default function RegisterScreen() {
       
       <Text style={styles.alreadyText}>Already have an account?</Text>
       {/* Login Link */}
-      <Pressable onPress={() => router.push('/login')}>
+      <Pressable onPress={() => router.push('/auth/login')}>
   <Text style={styles.login}>Login here</Text>
 </Pressable>
 

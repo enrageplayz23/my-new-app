@@ -31,7 +31,7 @@ export default function WelcomeScreen() {
       <View style={{ flex: 1 }} />
 
       {/* Get Started Button */}
-      <TouchableOpacity style={styles.button} onPress={() => router.push('/register')}>
+      <TouchableOpacity style={styles.button} onPress={() => router.push('/auth/register')}>
         <Text style={styles.buttonText}>Get Started</Text>
       </TouchableOpacity>
     </SafeAreaView>

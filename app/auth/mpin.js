@@ -1,47 +1,38 @@
-import React, { useState, useRef, useEffect } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TextInput,
-  TouchableOpacity,
-  Dimensions,
-  SafeAreaView,
-  Keyboard,
-} from 'react-native';
-import { useRouter, useLocalSearchParams } from 'expo-router';
+import React, { useState, useRef } from 'react';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, Dimensions, SafeAreaView, Keyboard,} from 'react-native';
+import { useRouter } from 'expo-router';
 
 const { width, height } = Dimensions.get('window');
 
-export default function ReEnterMPINScreen() {
+export default function MPINScreen() {
   const router = useRouter();
-  const { mpin: storedMpin } = useLocalSearchParams(); // received as a string e.g. "1234"
   const [mpin, setMpin] = useState(['', '', '', '']);
   const inputs = useRef([]);
-
-  const isMatch = mpin.join('') === storedMpin;
 
   const handleInput = (value, index) => {
     const newMpin = [...mpin];
     newMpin[index] = value;
     setMpin(newMpin);
 
+    // Go to next box if not last and value is entered
     if (value !== '' && index < inputs.current.length - 1) {
       inputs.current[index + 1].focus();
     }
 
+    // If all filled, dismiss keyboard or move next
     const allFilled = newMpin.every((d) => d !== '');
     if (allFilled) {
       Keyboard.dismiss();
+      // router.push('/nextPage'); // Optional: Auto-nav
     }
   };
 
   const handleKeyPress = (e, index) => {
     if (e.nativeEvent.key === 'Backspace' && mpin[index] === '' && index > 0) {
+      inputs.current[index - 1].focus();
       const newMpin = [...mpin];
       newMpin[index - 1] = '';
       setMpin(newMpin);
-      inputs.current[index - 1].focus();
     }
   };
 
@@ -60,14 +51,14 @@ export default function ReEnterMPINScreen() {
       </View>
 
       {/* Title */}
-      <Text style={styles.heading}>Re-enter your MPIN</Text>
+      <Text style={styles.heading}>Create your MPIN</Text>
       <Text style={styles.subtext}>
         Create your MPIN. Enter a 4-digit{'\n'}MPIN below.
       </Text>
 
       {/* MPIN Label + Clear */}
       <View style={styles.row}>
-        <Text style={styles.inputLabel}>Re-enter your MPIN</Text>
+        <Text style={styles.inputLabel}>Set your MPIN</Text>
         <TouchableOpacity onPress={clearMpin}>
           <Text style={styles.clear}>clear</Text>
         </TouchableOpacity>
@@ -89,20 +80,19 @@ export default function ReEnterMPINScreen() {
         ))}
       </View>
 
-      {/* ✅ Match message */}
-      {mpin.every((d) => d !== '') && isMatch && (
-        <View style={styles.matchBox}>
-          <Text style={styles.matchText}>✅ Nice! MPIN matches</Text>
-        </View>
-      )}
+      <Text style={styles.helperText}>
+        You will use this 4 digit MPIN to login next time.
+      </Text>
 
       {/* Spacer + Next button */}
       <View style={{ flex: 1 }} />
-      <TouchableOpacity
-        style={styles.nextBtn}
-        onPress={() => router.push('/success')}
-        disabled={!isMatch}
-      >
+      <TouchableOpacity style={styles.nextBtn} onPress={() =>
+  router.push({
+    pathname: '/auth/reenter-mpin',
+    params: { mpin: mpin.join('') }
+  })
+}
+>
         <Text style={styles.nextText}>next</Text>
       </TouchableOpacity>
     </SafeAreaView>
@@ -136,11 +126,11 @@ const styles = StyleSheet.create({
       marginHorizontal: 6,
     },
     heading: {
-      fontSize: 30,
-      fontWeight: 'bold',
-      color: '#3E4A5A',
-      marginBottom: 8,
-    },
+        fontSize: 30, // ⬆️ bigger title
+        fontWeight: 'bold',
+        color: '#3E4A5A',
+        marginBottom: 8,
+      },
     subtext: {
       fontSize: 14,
       color: '#5B6B7F',
@@ -166,27 +156,21 @@ const styles = StyleSheet.create({
       marginBottom: 12,
     },
     mpinBox: {
-      width: 70,
-      height: 70,
-      backgroundColor: '#fff',
-      borderRadius: 10,
-      textAlign: 'center',
-      fontSize: 24,
-      color: '#3E4A5A',
-      borderWidth: 1,
-      borderColor: '#D0D7DF',
-      marginRight: 10,
-    },
-    matchBox: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      marginTop: 4,
-      marginBottom: 12,
-    },
-    matchText: {
-      fontSize: 14,
-      color: '#2DC4A4',
-      fontWeight: 'bold',
+        width: 70,             // ⬆️ bigger width
+        height: 70,            // ⬆️ bigger height
+        backgroundColor: '#fff',
+        borderRadius: 10,
+        textAlign: 'center',
+        fontSize: 24,          // ⬆️ larger text
+        color: '#3E4A5A',
+        borderWidth: 1,
+        borderColor: '#D0D7DF',
+        marginRight: 10,       // ⬇️ reduce spacing between boxes
+      },
+      
+    helperText: {
+      fontSize: 12,
+      color: '#5B6B7F',
     },
     nextBtn: {
       backgroundColor: '#FE712D',

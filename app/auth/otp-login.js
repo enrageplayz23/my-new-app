@@ -1,21 +1,34 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  Image,
+  StyleSheet,
+  Keyboard,
+  SafeAreaView,
+} from 'react-native';
 import { useRouter } from 'expo-router';
 
-export default function OTPScreen() {
+export default function OTPLoginScreen() {
   const router = useRouter();
   const [otp, setOtp] = useState(['', '', '', '', '']);
   const inputs = useRef([]);
 
   const handleOtpInput = (value, index) => {
-    if (value.length > 1) return;
-
     const newOtp = [...otp];
     newOtp[index] = value;
     setOtp(newOtp);
 
     if (value !== '' && index < inputs.current.length - 1) {
       inputs.current[index + 1].focus();
+    }
+
+    const allFilled = newOtp.every((digit) => digit !== '');
+    if (allFilled) {
+      Keyboard.dismiss();
+      setTimeout(() => router.push('/auth/mpin-login'), 300);
     }
   };
 
@@ -33,32 +46,29 @@ export default function OTPScreen() {
     inputs.current[0]?.focus();
   };
 
-  useEffect(() => {
-    const allFilled = otp.every((digit) => digit !== '');
-    if (allFilled) {
-      setTimeout(() => {
-        router.push('/mpin');
-      }, 300);
-    }
-  }, [otp]);
-
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
+      {/* Logo */}
+      <View style={styles.logoWrapper}>
+        <View style={styles.logoCircle}>
+          <Text style={styles.logoText}>LOGO</Text>
+        </View>
+      </View>
+
       {/* Progress */}
       <View style={styles.progress}>
-        <View style={[styles.bar, styles.complete]} />
         <View style={[styles.bar, styles.active]} />
         <View style={styles.bar} />
       </View>
 
-      {/* Title + Subtext */}
+      {/* Title */}
       <Text style={styles.heading}>Enter One-Time-Password</Text>
-      <Text style={styles.subText}>
-        Please enter the one-time password (OTP) that was sent to{' '}
-        <Text style={styles.bold}>+639222555100</Text>
+      <Text style={styles.subtext}>
+        Please enter the one-time password (OTP){'\n'}
+        that was sent to <Text style={styles.bold}>+639222555100</Text>
       </Text>
 
-      {/* OTP Label and Clear */}
+      {/* OTP Label + Clear */}
       <View style={styles.otpTopRow}>
         <Text style={styles.otpLabel}>OTP</Text>
         <TouchableOpacity onPress={clearOtp}>
@@ -66,21 +76,26 @@ export default function OTPScreen() {
         </TouchableOpacity>
       </View>
 
-      {/* OTP Input Boxes */}
+      {/* OTP Inputs */}
       <View style={styles.otpRow}>
-        {otp.map((digit, index) => (
+        {otp.map((digit, i) => (
           <TextInput
-            key={index}
-            ref={(ref) => (inputs.current[index] = ref)}
+            key={i}
+            ref={(ref) => (inputs.current[i] = ref)}
             maxLength={1}
             keyboardType="number-pad"
             style={styles.otpBox}
             value={digit}
-            onChangeText={(val) => handleOtpInput(val, index)}
-            onKeyPress={(e) => handleKeyPress(e, index)}
+            onChangeText={(val) => handleOtpInput(val, i)}
+            onKeyPress={(e) => handleKeyPress(e, i)}
           />
         ))}
       </View>
+
+      {/* Resend */}
+      <TouchableOpacity>
+        <Text style={styles.resend}>Resend Code</Text>
+      </TouchableOpacity>
 
       {/* Alert */}
       <View style={styles.alertBox}>
@@ -91,15 +106,13 @@ export default function OTPScreen() {
         </Text>
       </View>
 
-      {/* Spacer to push footer down */}
+      {/* Spacer + Footer */}
       <View style={{ flex: 1 }} />
-
-      {/* Edit Mobile */}
       <Text style={styles.edit}>
         Not <Text style={styles.bold}>+639222555100</Text>?{' '}
         <Text style={styles.editLink}>Edit mobile number here.</Text>
       </Text>
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -108,12 +121,28 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#FFFBFC',
     padding: 24,
-    paddingTop: 50,
+    paddingTop: 40,
+  },
+  logoWrapper: {
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  logoCircle: {
+    width: 70,
+    height: 70,
+    borderRadius: 35,
+    backgroundColor: '#D0D7DF',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  logoText: {
+    fontWeight: 'bold',
+    color: '#3E4A5A',
   },
   progress: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginBottom: 32,
+    marginBottom: 24,
   },
   bar: {
     height: 5,
@@ -122,20 +151,16 @@ const styles = StyleSheet.create({
     marginHorizontal: 6,
     borderRadius: 3,
   },
-  complete: {
-    backgroundColor: '#2DC4A4',
-  },
   active: {
     backgroundColor: '#FF6A00',
   },
   heading: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: 'bold',
     color: '#3E4A5A',
     marginBottom: 8,
-    textAlign: 'left',
   },
-  subText: {
+  subtext: {
     fontSize: 14,
     color: '#5B6B7F',
     marginBottom: 24,
@@ -148,16 +173,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: 8,
-    alignItems: 'center',
   },
   otpLabel: {
-    fontSize: 14,
-    color: '#5B6B7F',
     fontWeight: 'bold',
+    color: '#3E4A5A',
+  },
+  clear: {
+    color: '#FF6A00',
+    textDecorationLine: 'underline',
   },
   otpRow: {
     flexDirection: 'row',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     marginBottom: 16,
   },
   otpBox: {
@@ -165,17 +192,17 @@ const styles = StyleSheet.create({
     height: 50,
     borderWidth: 1,
     borderColor: '#ccc',
-    marginRight: 12,
     textAlign: 'center',
     fontSize: 18,
     borderRadius: 6,
     backgroundColor: '#fff',
     color: '#3E4A5A',
   },
-  clear: {
+  resend: {
     color: '#FF6A00',
-    textDecorationLine: 'underline',
-    fontSize: 13,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 24,
   },
   alertBox: {
     backgroundColor: '#FFE5DB',
@@ -186,15 +213,13 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   alertText: {
-    fontSize: 14,
+    fontSize: 12,
     color: '#3E4A5A',
-    textAlign: 'center',
   },
   edit: {
     fontSize: 14,
     textAlign: 'center',
     color: '#3E4A5A',
-    marginTop: 16,
   },
   editLink: {
     fontWeight: 'bold',

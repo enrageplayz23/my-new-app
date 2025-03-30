@@ -22,7 +22,7 @@ export default function SuccessScreen() {
       <View style={{ flex: 1 }} />
 
       {/* Okay Button */}
-      <TouchableOpacity style={styles.okayButton} onPress={() => router.replace('/')}>
+      <TouchableOpacity style={styles.okayButton} onPress={() => router.replace('/auth/register')}>
         <Text style={styles.okayText}>Okay</Text>
       </TouchableOpacity>
     </SafeAreaView>

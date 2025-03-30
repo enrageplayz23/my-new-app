@@ -4,6 +4,12 @@
       "eas": {
         "projectId": "dd3aacb5-4e0a-4a36-8125-ef622c9d05e5"
       }
-    }
+    },
+    "android": {
+      "package": "com.enragetp.mynewapp"
+    },
+    "plugins": [
+      "expo-secure-store"
+    ]
   }
 }

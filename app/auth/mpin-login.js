@@ -27,7 +27,7 @@ export default function MPINLoginScreen() {
     const allFilled = newMpin.every((d) => d !== '');
     if (allFilled) {
       Keyboard.dismiss();
-      setTimeout(() => router.push('/welcome-back'), 300); // go to home/dashboard
+      setTimeout(() => router.push('/auth/welcome-back'), 300); // go to home/dashboard
     }
   };
 
