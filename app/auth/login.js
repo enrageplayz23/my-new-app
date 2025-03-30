@@ -37,7 +37,7 @@ export default function LoginScreen() {
 
       {/* Bottom Section */}
       <View style={styles.bottomSection}>
-            <TouchableOpacity style={styles.loginBtn} onPress={() => router.push('/auth/otp-login')}>
+            <TouchableOpacity style={styles.loginBtn} onPress={() => router.push('/otp-login')}>
         <Text style={styles.loginText}>Login</Text>
         </TouchableOpacity>
 
